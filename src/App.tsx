@@ -1,26 +1,80 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import { Button, Col, Container, Row } from 'react-bootstrap'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import axios from 'axios'
+
+import './App.css'
+
+const Main = () => (
+  <Container fluid>
+    <Row>
+      <Col>Today's Report</Col>
+    </Row>
+  </Container>
+)
+
+type ReportData = {
+  summary?: string
+  reporter?: string
+  field?: {
+    fieldId?: string
+    nutrient?: string
+    percentage?: string
+    feedback?: string
+  }[]
 }
 
-export default App;
+function SideButton(props: { label: string; style?: Record<string, unknown> }) {
+  const { label, style = {} } = props
+  return (
+    <Button
+      block
+      size="lg"
+      style={{ ...style, padding: 10, margin: 10 }}
+      variant="primary"
+    >
+      {label}
+    </Button>
+  )
+}
+
+function App() {
+  const [isLoading, setLoading] = useState<boolean>(true)
+  const [state, setState] = useState<ReportData>({})
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:4200/reports`)
+      .then((r) => {
+        setLoading(false)
+        setState(r?.data?.data as ReportData)
+
+        return r?.data.data
+      })
+      .catch(console.error)
+  }, [])
+
+  useEffect(() => {}, [isLoading])
+
+  if (isLoading) return <>Loading</>
+
+  return (
+    <div className="">
+      <div className="sidenav">
+        <SideButton label="Summary" />
+
+        <SideButton label="Reports" />
+
+        <SideButton label="Add Field" />
+
+        <SideButton label="Show reports" />
+      </div>
+
+      <div className="main">
+        <Main />
+      </div>
+    </div>
+  )
+}
+
+export default App
