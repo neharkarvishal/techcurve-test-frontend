@@ -30,7 +30,10 @@ function SideButton(props: { label: string; style?: Record<string, unknown> }) {
     <Button
       block
       size="lg"
-      style={{ ...style, padding: 10, margin: 10 }}
+      style={{
+        ...style, // passed styles
+        padding: 10,
+      }}
       variant="primary"
     >
       {label}
